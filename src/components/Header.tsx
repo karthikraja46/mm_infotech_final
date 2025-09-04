@@ -1,105 +1,129 @@
-import { useState } from "react";
-import { Menu, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { Menu, X } from 'lucide-react';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const navigate = useNavigate();
+  const [isScrolled, setIsScrolled] = useState(false);
 
-  const navigationItems = [
-    { name: "Home", href: "#home", type: "scroll" },
-    { name: "Services", href: "#services", type: "scroll" },
-    { name: "About", href: "/about", type: "route" },
-    { name: "Careers", href: "#careers", type: "scroll" },
-    { name: "Contact", href: "#contact", type: "scroll" },
-  ];
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
-  const handleNavigation = (item: { href: string; type: string }) => {
-    if (item.type === "route") {
-      navigate(item.href);
-    } else {
-      const element = document.querySelector(item.href);
-      if (element) {
-        element.scrollIntoView({ behavior: "smooth" });
-      }
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+      setIsMenuOpen(false);
     }
-    setIsMenuOpen(false);
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
-      <div className="container mx-auto px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+    <header 
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 header-white ${
+        isScrolled ? 'shadow-lg' : ''
+      }`}
+    >
+      <nav className="container-professional">
+        <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
-          <div className="flex-shrink-0">
-            <button
-              onClick={() => navigate("/")}
-              className="text-2xl font-bold text-primary hover:text-primary-light transition-colors duration-200"
-            >
+          <div className="flex items-center space-x-2">
+            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+              <span className="text-primary-foreground font-bold text-xl">MM</span>
+            </div>
+            <div className="font-bold text-xl text-foreground">
               MM Infotech Inc.
-            </button>
+            </div>
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            {navigationItems.map((item) => (
-              <button
-                key={item.name}
-                onClick={() => handleNavigation(item)}
-                className="text-foreground hover:text-primary font-medium transition-colors duration-200 relative group"
-              >
-                {item.name}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
-              </button>
-            ))}
-            <Button
-              onClick={() => handleNavigation({ href: "#contact", type: "scroll" })}
-              variant="default"
-              className="ml-4"
+          <div className="hidden lg:flex items-center space-x-8">
+            <button
+              onClick={() => scrollToSection('home')}
+              className="text-foreground hover:text-primary transition-colors duration-200 font-medium"
             >
-              Get in Touch
-            </Button>
-          </nav>
+              Home
+            </button>
+            <button
+              onClick={() => scrollToSection('services')}
+              className="text-foreground hover:text-primary transition-colors duration-200 font-medium"
+            >
+              Services
+            </button>
+            <button
+              onClick={() => scrollToSection('careers')}
+              className="text-foreground hover:text-primary transition-colors duration-200 font-medium"
+            >
+              Careers
+            </button>
+            <button
+              onClick={() => scrollToSection('about')}
+              className="text-foreground hover:text-primary transition-colors duration-200 font-medium"
+            >
+              About
+            </button>
+            <button
+              onClick={() => scrollToSection('contact')}
+              className="btn-hero"
+            >
+              Contact
+            </button>
+          </div>
 
-          {/* Mobile menu button */}
-          <div className="md:hidden">
-            <Button
-              variant="ghost"
-              size="icon"
+          {/* Mobile Menu Button */}
+          <div className="lg:hidden">
+            <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="text-foreground hover:text-primary transition-colors duration-200"
             >
-              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </Button>
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
           </div>
         </div>
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 bg-background border-t border-border">
-              {navigationItems.map((item) => (
+          <div className="lg:hidden absolute top-full left-0 right-0 bg-background/95 backdrop-blur-md border-t border-border shadow-lg">
+            <div className="py-4 space-y-4">
+              <button
+                onClick={() => scrollToSection('home')}
+                className="block w-full text-left px-4 py-2 text-foreground hover:text-primary hover:bg-secondary/50 transition-all duration-200 font-medium"
+              >
+                Home
+              </button>
+              <button
+                onClick={() => scrollToSection('services')}
+                className="block w-full text-left px-4 py-2 text-foreground hover:text-primary hover:bg-secondary/50 transition-all duration-200 font-medium"
+              >
+                Services
+              </button>
+              <button
+                onClick={() => scrollToSection('careers')}
+                className="block w-full text-left px-4 py-2 text-foreground hover:text-primary hover:bg-secondary/50 transition-all duration-200 font-medium"
+              >
+                Careers
+              </button>
+              <button
+                onClick={() => scrollToSection('about')}
+                className="block w-full text-left px-4 py-2 text-foreground hover:text-primary hover:bg-secondary/50 transition-all duration-200 font-medium"
+              >
+                About
+              </button>
+              <div className="px-4">
                 <button
-                  key={item.name}
-                  onClick={() => handleNavigation(item)}
-                  className="block w-full text-left px-3 py-2 text-foreground hover:text-primary hover:bg-secondary/50 font-medium transition-colors duration-200"
+                  onClick={() => scrollToSection('contact')}
+                  className="btn-hero w-full"
                 >
-                  {item.name}
+                  Contact
                 </button>
-              ))}
-              <div className="pt-2">
-                <Button
-                  onClick={() => handleNavigation({ href: "#contact", type: "scroll" })}
-                  variant="default"
-                  className="w-full"
-                >
-                  Get in Touch
-                </Button>
               </div>
             </div>
           </div>
         )}
-      </div>
+      </nav>
     </header>
   );
 };
